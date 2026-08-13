@@ -333,8 +333,21 @@ export function SiteFooter({ onNavigate }: { onNavigate: (id: string) => void })
         </div>
       </div>
       <div className="border-t border-white/10 py-5 text-center text-xs text-ink-foreground/50">
-        {CONTACT.company} © Todos os direitos reservados.
-      </div>
+  <p>
+    {CONTACT.company} © Todos os direitos reservados.
+  </p>
+  <p className="mt-1">
+    Desenvolvido por{" "}
+    <a
+      href="https://lorranevelosodevweb.com.br/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold text-brand hover:underline transition-colors"
+    >
+      Lorrane Veloso Dev Web
+    </a>
+  </p>
+</div>
     </footer>
   );
 }
