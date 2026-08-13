@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Phone, Search, X, Instagram, Facebook, MessageCircle, Lock } from "lucide-react";
 import { CONTACT, NAV, waLink } from "./data";
 import { Logo } from "./Logo";
@@ -7,16 +7,32 @@ import { Logo } from "./Logo";
 export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
+  const navigate = useNavigate();
 
   const go = (id: string) => {
     setOpen(false);
     onNavigate(id);
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (term.trim()) {
+      navigate({
+        to: "/catalogo",
+        search: { q: term.trim() },
+      });
+      setOpen(false);
+    } else {
+      navigate({ to: "/catalogo" });
+      setOpen(false);
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-40 bg-ink text-ink-foreground shadow-card">
-      <div className="border-b border-white/10 bg-black/40">
-        <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2 text-xs sm:flex sm:justify-between">
+    <header className="sticky top-0 z-40 w-full max-w-full overflow-x-hidden bg-ink text-ink-foreground shadow-card">
+      {/* Topo Superior */}
+      <div className="border-b border-white/10 bg-black/40 w-full">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 text-xs w-full max-w-full overflow-hidden">
           <a
             href={`tel:${CONTACT.phoneLabel.replace(/\D/g, "")}`}
             className="flex min-w-0 items-center gap-2 font-semibold"
@@ -26,6 +42,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void })
               Tele Vendas <span className="text-brand">{CONTACT.phoneLabel}</span>
             </span>
           </a>
+          
           <div className="flex shrink-0 items-center gap-3">
             <a href={CONTACT.instagram} aria-label="Instagram" className="hover:text-brand">
               <Instagram className="h-4 w-4" />
@@ -54,20 +71,15 @@ export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void })
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
-        <button onClick={() => go("inicio")} className="shrink-0" aria-label="Início">
+      {/* Conteúdo Principal do Header */}
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 w-full">
+        <button onClick={() => go("inicio")} className="shrink-0 max-w-[60%] sm:max-w-none" aria-label="Início">
           <Logo />
         </button>
 
-        {/* Barra de busca alinhada à direita com ml-auto */}
+        {/* Barra de busca Desktop */}
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            window.open(
-              waLink(`Olá! Estou procurando por: ${term || "produtos de EPI"}`),
-              "_blank",
-            );
-          }}
+          onSubmit={handleSearch}
           className="hidden ml-auto max-w-md w-full items-center rounded-md bg-white/95 px-3 py-1.5 lg:flex"
         >
           <input
@@ -76,11 +88,12 @@ export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void })
             placeholder="Pesquisar Produtos, Óculos, Capacetes, Botas..."
             className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted-foreground"
           />
-          <button type="submit" aria-label="Pesquisar" className="shrink-0 text-ink/70">
+          <button type="submit" aria-label="Pesquisar" className="shrink-0 text-ink/70 hover:text-brand transition-colors">
             <Search className="h-5 w-5" />
           </button>
         </form>
 
+        {/* Botão Sanduíche Mobile */}
         <button
           onClick={() => setOpen((v) => !v)}
           className="ml-auto shrink-0 rounded-md border border-white/15 p-2 md:hidden"
@@ -90,7 +103,8 @@ export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void })
         </button>
       </div>
 
-      <nav className="hidden border-t border-white/10 bg-white/5 md:block">
+      {/* Navegação Desktop */}
+      <nav className="hidden border-t border-white/10 bg-white/5 md:block w-full">
         <div className="mx-auto flex max-w-7xl gap-1 px-4">
           {NAV.map((item) => (
             <button
@@ -104,15 +118,13 @@ export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void })
         </div>
       </nav>
 
+      {/* Menu Sanduíche Mobile */}
       {open && (
-        <nav className="border-t border-white/10 bg-black/60 md:hidden">
-          <div className="px-4 py-3">
+        <nav className="border-t border-white/10 bg-black/90 md:hidden w-full max-w-full">
+          <div className="px-4 py-3 w-full">
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                window.open(waLink(`Olá! Procuro por: ${term || "EPI"}`), "_blank");
-              }}
-              className="mb-3 flex items-center rounded-md bg-white/95 px-3 py-2"
+              onSubmit={handleSearch}
+              className="mb-3 flex w-full max-w-full items-center rounded-md bg-white/95 px-3 py-2"
             >
               <input
                 value={term}
@@ -120,7 +132,9 @@ export function SiteHeader({ onNavigate }: { onNavigate: (id: string) => void })
                 placeholder="Pesquisar produtos..."
                 className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted-foreground"
               />
-              <Search className="h-5 w-5 shrink-0 text-ink/70" />
+              <button type="submit" aria-label="Pesquisar" className="shrink-0 text-ink/70">
+                <Search className="h-5 w-5" />
+              </button>
             </form>
             {NAV.map((item) => (
               <button

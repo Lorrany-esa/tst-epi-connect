@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Instagram,
   Facebook,
+  Building,
 } from "lucide-react";
 import { CONTACT, NAV, waLink } from "./data";
 import { Logo } from "./Logo";
@@ -201,6 +202,8 @@ export function About() {
   );
 }
 
+
+
 export function CaLookup() {
   const [ca, setCa] = useState("");
   const [submitted, setSubmitted] = useState<string | null>(null);
@@ -283,9 +286,7 @@ export function SiteFooter({ onNavigate }: { onNavigate: (id: string) => void })
             <a href={CONTACT.instagram} aria-label="Instagram" className="text-brand">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href={CONTACT.facebook} aria-label="Facebook" className="text-brand">
-              <Facebook className="h-5 w-5" />
-            </a>
+            
             <a href={waLink("Olá!")} aria-label="WhatsApp" className="text-brand">
               <MessageCircle className="h-5 w-5" />
             </a>
@@ -307,6 +308,11 @@ export function SiteFooter({ onNavigate }: { onNavigate: (id: string) => void })
             <li className="flex gap-2">
               <Mail className="h-4 w-4 shrink-0 text-brand" /> {CONTACT.email}
             </li>
+            <li className="flex gap-2">
+              <Building className="h-4 w-4 shrink-0 text-brand" /> {CONTACT.cnpj}
+            </li>
+          
+
           </ul>
         </div>
 
