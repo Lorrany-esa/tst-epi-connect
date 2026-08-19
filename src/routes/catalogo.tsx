@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, X, ZoomIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/tst/SiteHeader";
 import { SiteFooter } from "@/components/tst/Sections";
@@ -45,6 +45,8 @@ function Catalogo() {
   const [error, setError] = useState<string | null>(null);
   const [category, setCategory] = useState<string>("Todos");
 
+  const [selectedImage, setSelectedImage] = useState<{ url: string; alt: string } | null>(null);
+
   useEffect(() => {
     let active = true;
     (async () => {
@@ -64,7 +66,6 @@ function Catalogo() {
     };
   }, []);
 
-  // Extrai APENAS as categorias reais existentes nos produtos cadastrados (sem duplicatas)
   const dbCategories = Array.from(
     new Set(
       products
@@ -75,7 +76,6 @@ function Catalogo() {
 
   const categories = ["Todos", ...dbCategories];
 
-  // Filtra apenas produtos pertencentes à categoria selecionada
   const visible = category === "Todos" 
     ? products 
     : products.filter((p) => p.category?.trim().toUpperCase() === category);
@@ -96,7 +96,6 @@ function Catalogo() {
         </section>
 
         <div className="mx-auto max-w-7xl px-4 py-10">
-          {/* Menu de Filtro dinâmico base nas categorias cadastradas */}
           {categories.length > 1 && (
             <div className="mb-8 flex flex-wrap gap-2">
               {categories.map((c) => (
@@ -123,31 +122,42 @@ function Catalogo() {
             </p>
           )}
 
-          {/* Grid de Produtos cadastrados */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {visible.map((p) => (
               <article
                 key={p.id}
                 className="flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card transition-shadow hover:shadow-lg"
               >
-                <div className="aspect-square overflow-hidden bg-surface relative flex items-center justify-center">
+                <div 
+                  className={`aspect-square overflow-hidden bg-surface relative flex items-center justify-center ${
+                    p.image_url ? "cursor-pointer group" : ""
+                  }`}
+                  onClick={() => p.image_url && setSelectedImage({ url: p.image_url, alt: p.name })}
+                >
                   {p.image_url ? (
-                    <img
-                      src={p.image_url}
-                      alt={p.name}
-                      loading="lazy"
-                      width={800}
-                      height={800}
-                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
+                    <>
+                      <img
+                        src={p.image_url}
+                        alt={p.name}
+                        loading="lazy"
+                        width={800}
+                        height={800}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+                          <ZoomIn className="h-4 w-4" /> Ampliar
+                        </span>
+                      </div>
+                    </>
                   ) : (
-                    <div className="text-xs font-semibold text-muted-foreground uppercase">
+                    <div className="text-xs font-semibold uppercase text-muted-foreground">
                       Sem imagem
                     </div>
                   )}
 
                   {p.category && (
-                    <span className="absolute top-2 left-2 bg-ink/80 text-ink-foreground px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+                    <span className="absolute top-2 left-2 z-10 rounded bg-ink/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink-foreground backdrop-blur-sm">
                       {p.category}
                     </span>
                   )}
@@ -158,18 +168,20 @@ function Catalogo() {
                     CA: {p.ca_number || "—"}
                   </span>
                   
-                  <h2 className="mt-1 text-sm font-bold leading-snug text-foreground line-clamp-2">
+                  <h2 className="mt-1 text-sm font-bold leading-snug text-foreground">
                     {p.name}
                   </h2>
 
+                  {/* Descrição com limite de altura e barra de rolagem interna */}
                   {p.description && (
-                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                      {p.description}
-                    </p>
+                    <div className="mt-2 max-h-24 overflow-y-auto pr-1">
+                      <p className="text-xs text-muted-foreground whitespace-pre-line break-words leading-relaxed">
+                        {p.description}
+                      </p>
+                    </div>
                   )}
 
-                  <div className="mt-auto pt-3">
-                    {/* Exibe o preço apenas se ele existir e for maior que zero */}
+                  <div className="mt-auto pt-4">
                     {p.price && p.price > 0 ? (
                       <div className="text-lg font-extrabold text-ink">
                         {formatPrice(p.price, p.price_label)}
@@ -193,6 +205,29 @@ function Catalogo() {
           </div>
         </div>
       </main>
+
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-lg bg-card p-2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-3 right-3 z-10 rounded-full bg-black/60 p-2 text-white transition hover:bg-black/90"
+              aria-label="Fechar"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <img
+              src={selectedImage.url}
+              alt={selectedImage.alt}
+              className="max-h-[85vh] max-w-[85vw] object-contain rounded"
+            />
+          </div>
+        </div>
+      )}
+
       <SiteFooter onNavigate={onNavigate} />
       <WhatsAppWidget />
     </div>
