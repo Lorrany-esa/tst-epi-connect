@@ -123,7 +123,7 @@ const CATEGORIES = [
   { name: "Proteção Respiratória", img: prodRespiratoria },
   { name: "Proteção Visual", img: prodOculos },
   { name: "Ferramentas", img: prodFerramentas },
-  { name: "Kits de Emergência", img: prodEmergencia },
+  { name: "Óleo e Graxas", img: prodEmergencia },
 ];
 
 export function Categories() {
