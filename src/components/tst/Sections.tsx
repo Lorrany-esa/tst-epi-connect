@@ -25,6 +25,8 @@ import prodRespiratoria from "@/assets/prod-respiratoria.jpg";
 import prodOculos from "@/assets/prod-oculos.jpg";
 import prodFerramentas from "@/assets/prod-ferramentas.jpg";
 import prodEmergencia from "@/assets/prod-emergencia.jpg";
+import prodMaquina from "@/assets/prod-maquina.jpg";
+import prodKitferramentas from "@/assets/prod-kitferramentas.jpg";
 
 export function Hero({ onNavigate }: { onNavigate: (id: string) => void }) {
   return (
@@ -124,6 +126,11 @@ const CATEGORIES = [
   { name: "Proteção Visual", img: prodOculos },
   { name: "Ferramentas", img: prodFerramentas },
   { name: "Óleo e Graxas", img: prodEmergencia },
+  { name: "Máquinas", img: prodMaquina },
+  { name: "Kit Ferramentas", img: prodKitferramentas },
+
+
+
 ];
 
 export function Categories() {

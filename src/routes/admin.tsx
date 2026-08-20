@@ -18,7 +18,9 @@ const CATEGORIES = [
   "FERRAMENTAS",
   "ÓLEO E GRAXAS",
   "PROTEÇÃO CONTRA QUEDAS",
-  "VESTUÁRIO"
+  "VESTUÁRIO",
+  "MÁQUINAS",
+  "KIT FERRAMENTAS"
 ];
 
 // Componente para Gerenciar Banners (Upload de Arquivo / URL)
